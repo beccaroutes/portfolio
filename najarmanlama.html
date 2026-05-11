@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Najar Man Lama Exhibition</title>
+<style>
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  @font-face {
+    font-family: 'Monument Grotesk';
+    src: url('assets/fonts/font1.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  html, body {
+    background: #000000;
+    color: #FFFFFF;
+    font-family: 'Monument Grotesk', 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ─── Header ─── */
+  header {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #000000;
+  }
+
+  .logo {
+    flex-shrink: 0;
+  }
+
+  .logo img {
+    display: block;
+    height: 24px;
+    width: auto;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-left: auto;
+  }
+
+  nav a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s ease;
+  }
+
+  nav a:hover {
+    opacity: 0.7;
+  }
+
+  nav a .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #FFFFFF;
+    flex-shrink: 0;
+  }
+
+  nav a.active .dot {
+    background: #FFFFFF;
+  }
+
+  /* ─── Main 3-column layout ─── */
+  .project-layout {
+    display: grid;
+    grid-template-columns: 16% 24% 1fr;
+    gap: 0;
+    padding-top: 48px; /* header height */
+    min-height: 100vh;
+    transition: grid-template-columns 0.6s ease;
+  }
+
+  .project-layout.scrolled {
+    grid-template-columns: 0% 24% 1fr;
+  }
+
+  /* ─── Left Sidebar — fixed, hides on scroll ─── */
+  .sidebar {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    width: 16%;
+    padding: 12px 15px 24px 24px;
+    z-index: 10;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .sidebar.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-8px);
+  }
+
+  .project-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 12px;
+    margin-right: -15px;
+  }
+
+  .meta-block {
+    margin-bottom: 12px;
+  }
+
+  .meta-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    margin-bottom: 1px;
+  }
+
+  .meta-value {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666666;
+    line-height: 160%;
+  }
+
+  /* ─── Info Column — sticky with transitioning text ─── */
+  .info-column {
+    position: fixed;
+    top: 48px;
+    left: 16%;
+    width: 24%;
+    padding: 12px 24px 24px 24px;
+    z-index: 10;
+    overflow: hidden;
+    transition: left 0.6s ease;
+  }
+
+  .info-column.scrolled {
+    left: 0;
+  }
+
+  .column-header {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 12px;
+  }
+
+  .info-text-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .info-text {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 160%;
+    color: #FFFFFF;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+  }
+
+  .info-text.hidden {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(8px);
+  }
+
+  .info-text.visible {
+    opacity: 1;
+    position: relative;
+    transform: translateY(0);
+  }
+
+  .info-text p {
+    margin-bottom: 16px;
+  }
+
+  .info-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ─── Asset Column — scrolls freely ─── */
+  .asset-column {
+    grid-column: 3;
+    padding: 0 0 60px 0;
+    margin-top: 52px;
+    background: #000000; /* space for fixed asset header */
+  }
+
+  .asset-header {
+    position: fixed;
+    top: 48px;
+    right: 0;
+    left: 40%; /* 16% sidebar + 24% info */
+    padding: 12px 24px 8px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    border-bottom: 1px solid #333;
+    background: #000000;
+    z-index: 10;
+    transition: left 0.6s ease;
+  }
+
+  .asset-header.scrolled {
+    left: 24%;
+  }
+
+  .asset-images {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .asset-image {
+    width: 100%;
+    background: #000000;
+  }
+
+  .asset-image img {
+    width: 100%;
+    display: block;
+  }
+
+  .collage-row {
+    display: grid;
+    gap: 4px;
+    height: 360px;
+  }
+
+  .collage-row-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  .collage-row-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .collage-row img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #000000;
+  }
+
+  .collage-row[style*="height:auto"] img {
+    height: auto;
+    object-fit: unset;
+  }
+
+  .asset-image--collage {
+    margin-bottom: 0;
+  }
+
+  .collage-section {
+    margin-bottom: 80px;
+  }
+
+  .asset-images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    max-width: 80%;
+    margin: 0 auto;
+  }
+
+  .asset-images-grid .asset-image {
+    margin-bottom: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #000000;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 1024px) {
+    .project-layout {
+      display: flex;
+      flex-direction: column;
+      padding-top: 48px;
+    }
+
+    .sidebar {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      padding: 24px;
+    }
+
+    .info-column {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      padding: 0 24px 24px;
+    }
+
+    .info-text.hidden {
+      display: none;
+    }
+
+    .asset-column {
+      padding: 0 24px 60px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">
+      <img src="assets/images/image1.svg" alt="Logo" />
+    </a>
+    <nav>
+      <a href="index.html" class="active">
+        <span class="dot"></span>
+        Index
+      </a>
+      <a href="#">
+        <span class="dot"></span>
+        Information
+      </a>
+    </nav>
+  </header>
+
+  <div class="project-layout">
+    <!-- Left Sidebar — fixed -->
+    <aside class="sidebar">
+      <div class="project-title">Najar Man Lama Exhibition</div>
+
+      <div class="meta-block">
+        <div class="meta-label">Duration</div>
+        <div class="meta-value">March 2025 to Dec 2025</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Curator</div>
+        <div class="meta-value">Becca Yeap</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Exhibition Design</div>
+        <div class="meta-value">Becca Yeap</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Installation</div>
+        <div class="meta-value">Zaina Abden, Mane Mukhiya, Abdul Aziz, Kamrul Hassan, Becca Yeap</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Press</div>
+        <div class="meta-value">Laterals Magazine</div>
+      </div>
+    </aside>
+
+    <!-- Info Column — fixed, text transitions on scroll -->
+    <div class="info-column">
+      <div class="column-header">Info</div>
+      <div class="info-text-container">
+        <div class="info-text visible" data-info="0">
+          <p>An independently produced solo exhibition in Ipoh, Malaysia, featuring 18 works by Nepalese thangka artist Najar Man Lama, an artist who first arrived in the country as a migrant worker. The exhibition frames Lama's work through migrant labor and cultural displacement, while introducing the visual language of Tibetan Buddhism within a Malaysian context where it is not widely familiar.</p>
+          <p>I led the exhibition design, research, and curation. The project began with fieldwork in Nepal, grounding the work in its cultural context. I developed the spatial layout and interpretive system, designed all graphic materials, and executed the installation on-site, carrying out the build from painting and lighting to vinyl application and artwork installation.</p>
+        </div>
+        <div class="info-text hidden" data-info="1">
+          <p style="color:#666666; margin-bottom:0;">Visual System</p>
+          <p style="color:#FFFFFF;">Created a five step wall diagram illustrating the thangka painting process, based on a deconstructed work by the artist. Each stage, from canvas preparation and outlining to shading, coloring, and final consecration, is presented on angled panels that form distinct reading zones along the circulation path.</p>
+        </div>
+        <div class="info-text hidden" data-info="3">
+          <p style="color:#666666; margin-bottom:0;">Visual System</p>
+          <p style="color:#FFFFFF;">Developed a wall-based guide to thangka iconography, explaining symbols and mudras encountered in later rooms. This initial wall functions as a primer, providing the additional context to interpret the paintings that follow.</p>
+        </div>
+        <div class="info-text hidden" data-info="2">
+          <p style="color:#666666; margin-bottom:0;">Behind the Scenes</p>
+          <p style="color:#FFFFFF;">Played an active role in the physical build of the exhibition, installing vinyl graphics, painting, and lighting. Involved through final installation and finishing stages.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asset Column — scrolls normally -->
+    <section class="asset-column">
+      <div class="asset-header">Asset</div>
+      <div class="asset-images">
+        <div class="asset-image" data-info-index="0">
+          <img src="assets/images/image1.jpg" alt="nml01" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="0">
+          <img src="assets/images/image2.jpg" alt="nml02" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="0">
+          <img src="assets/images/image3.jpg" alt="nml03" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="0">
+          <img src="assets/images/image4.jpg" alt="nml04" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="0">
+          <img src="assets/images/image5.jpg" alt="nml10" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="1">
+          <video id="thangka-video" style="width:100%;height:100%;object-fit:cover;display:block;" src="assets/video/video1.mp4" loop muted playsinline style="width:100%;display:block;"></video>
+        </div>
+        <div class="asset-image" data-info-index="1">
+          <img src="assets/images/image6.jpg" alt="nml06" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image7.jpg" alt="nml07" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="5">
+          <img src="assets/images/image8.jpg" alt="guide" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="5">
+          <img src="assets/images/image1.gif" alt="guide2" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="4">
+          <img src="assets/images/image9.jpg" alt="booklet" loading="lazy" />
+        </div>
+        <div class="asset-image asset-image--collage" data-info-index="2">
+          <div class="collage-section">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:4px;">
+              <img src="assets/images/image10.jpg" alt="col1" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
+              <img src="assets/images/image11.jpg" alt="col2" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
+              <img src="assets/images/image12.jpg" alt="col3" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
+              <img src="assets/images/image13.jpg" alt="col4" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" />
+            </div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:4px; margin-top:12px;">
+              <img src="assets/images/image14.jpg" alt="col5" loading="lazy" style="width:100%;height:420px;object-fit:cover;display:block;" />
+              <img src="assets/images/image2.gif" alt="col6" loading="lazy" style="width:100%;height:420px;object-fit:cover;display:block;" />
+              <img src="assets/images/image15.jpg" alt="col7" loading="lazy" style="width:100%;height:420px;object-fit:cover;display:block;" />
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 2fr 1fr; gap:4px; margin-top:12px;">
+              <img src="assets/images/image3.gif" alt="col8" loading="lazy" style="width:100%;height:420px;object-fit:cover;display:block;" />
+              <img src="assets/images/image16.jpg" alt="col9" loading="lazy" style="width:100%;height:420px;object-fit:cover;display:block;" />
+              <img src="assets/images/image17.jpg" alt="col10" loading="lazy" style="width:100%;height:420px;object-fit:cover;display:block;" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Scroll-driven info text transitions
+    const infoTexts = document.querySelectorAll('.info-text');
+    const assetImages = document.querySelectorAll('.asset-image:not(.asset-images-grid .asset-image), .asset-images-grid');
+    document.querySelector('.asset-images-grid') && (document.querySelector('.asset-images-grid').dataset.infoIndex = '3');
+    let currentInfo = 0;
+    let debounceTimer = null;
+
+    function updateInfoText(newIndex) {
+      if (newIndex === currentInfo) return;
+
+      infoTexts.forEach(el => {
+        el.classList.remove('visible');
+        el.classList.add('hidden');
+      });
+
+      const target = document.querySelector(`.info-text[data-info="${newIndex}"]`);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('visible');
+      }
+
+      currentInfo = newIndex;
+    }
+
+    // Track the best visible image across all entries
+    const visibilityMap = new Map();
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        visibilityMap.set(entry.target, entry.intersectionRatio);
+      });
+
+      // Debounce: wait for scrolling to settle before transitioning
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        let bestEl = null;
+        let bestRatio = 0;
+
+        visibilityMap.forEach((ratio, el) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestEl = el;
+          }
+        });
+
+        if (bestEl && bestRatio > 0) {
+          const infoIndex = parseInt(bestEl.dataset.infoIndex);
+          updateInfoText(infoIndex);
+        }
+      }, 150);
+    }, {
+      threshold: [0, 0.1, 0.25, 0.5],
+      rootMargin: '0px 0px -10% 0px'
+    });
+
+    assetImages.forEach(img => observer.observe(img));
+
+    // Hide sidebar on scroll
+    const sidebar = document.querySelector('.sidebar');
+    const infoCol = document.querySelector('.info-column');
+    const assetHeader = document.querySelector('.asset-header');
+    const layout = document.querySelector('.project-layout');
+    let scrolled = false;
+
+    // Play tryagain video only when in view
+    const tryagainVideo = document.getElementById('tryagain-video');
+    if (tryagainVideo) {
+      const tryagainObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tryagainVideo.play();
+          } else {
+            tryagainVideo.pause();
+            tryagainVideo.currentTime = 0;
+          }
+        });
+      }, { threshold: 0.3 });
+      tryagainObserver.observe(tryagainVideo);
+    }
+
+    // Play video only when in view
+    const thangkaVideo = document.getElementById('thangka-video');
+    if (thangkaVideo) {
+      const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            thangkaVideo.play();
+          } else {
+            thangkaVideo.pause();
+            thangkaVideo.currentTime = 0;
+          }
+        });
+      }, { threshold: 0.3 });
+      videoObserver.observe(thangkaVideo);
+    }
+
+    window.addEventListener('scroll', () => {
+      const shouldHide = window.scrollY > 40;
+      if (shouldHide !== scrolled) {
+        scrolled = shouldHide;
+        sidebar.classList.toggle('hidden', scrolled);
+        infoCol.classList.toggle('scrolled', scrolled);
+        assetHeader.classList.toggle('scrolled', scrolled);
+        layout.classList.toggle('scrolled', scrolled);
+      }
+    });
+  </script>
+
+</body>
+</html>
