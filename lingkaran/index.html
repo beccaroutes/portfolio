@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lingkaran</title>
+<style>
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  @font-face {
+    font-family: 'Monument Grotesk';
+    src: url('assets/fonts/font1.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  html, body {
+    background: #000000;
+    color: #FFFFFF;
+    font-family: 'Monument Grotesk', 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  cursor: none !important;
+  }
+
+  /* ─── Header ─── */
+  header {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #000000;
+  }
+
+  .logo {
+    flex-shrink: 0;
+  }
+
+  .logo img {
+    display: block;
+    height: 24px;
+    width: auto;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-left: auto;
+  }
+
+  nav a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s ease;
+  }
+
+  nav a:hover {
+    opacity: 0.7;
+  }
+
+  nav a .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #FFFFFF;
+    flex-shrink: 0;
+  }
+
+  nav a.active .dot {
+    background: #FFFFFF;
+  }
+
+  /* ─── Main 3-column layout ─── */
+  .project-layout {
+    display: grid;
+    grid-template-columns: 16% 24% 1fr;
+    gap: 0;
+    padding-top: 48px; /* header height */
+    min-height: 100vh;
+    transition: grid-template-columns 0.6s ease;
+  }
+
+  .project-layout.scrolled {
+    grid-template-columns: 0% 24% 1fr;
+  }
+
+  /* ─── Left Sidebar — fixed, hides on scroll ─── */
+  .sidebar {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    width: 16%;
+    padding: 12px 15px 24px 24px;
+    z-index: 10;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .sidebar.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-8px);
+  }
+
+  .project-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 12px;
+    margin-right: -15px;
+  }
+
+  .meta-block {
+    margin-bottom: 12px;
+  }
+
+  .meta-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    margin-bottom: 1px;
+  }
+
+  .meta-value {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666666;
+    line-height: 160%;
+  }
+
+  /* ─── Info Column — sticky with transitioning text ─── */
+  .info-column {
+    position: fixed;
+    top: 48px;
+    left: 16%;
+    width: 24%;
+    padding: 12px 24px 24px 24px;
+    z-index: 10;
+    overflow: hidden;
+    transition: left 0.6s ease;
+  }
+
+  .info-column.scrolled {
+    left: 0;
+  }
+
+  .column-header {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 12px;
+  }
+
+  .info-text-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .info-text {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 160%;
+    color: #FFFFFF;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+  }
+
+  .info-text.hidden {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(8px);
+  }
+
+  .info-text.visible {
+    opacity: 1;
+    position: relative;
+    transform: translateY(0);
+  }
+
+  .info-text p {
+    margin-bottom: 16px;
+  }
+
+  .info-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ─── Asset Column — scrolls freely ─── */
+  .asset-column {
+    grid-column: 3;
+    padding: 0 0 60px 0;
+    margin-top: 52px;
+    background: #000000; /* space for fixed asset header */
+  }
+
+  .asset-header {
+    position: fixed;
+    top: 48px;
+    right: 0;
+    left: 40%; /* 16% sidebar + 24% info */
+    padding: 12px 24px 8px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    border-bottom: 1px solid #333;
+    background: #000000;
+    z-index: 10;
+    transition: left 0.6s ease;
+  }
+
+  .asset-header.scrolled {
+    left: 24%;
+  }
+
+  .asset-images {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  .asset-image {
+    width: 100%;
+    background: #000000;
+  }
+
+  .asset-image img {
+    width: 100%;
+    display: block;
+  }
+
+  .asset-images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    max-width: 80%;
+    margin: 0 auto;
+  }
+
+  .asset-images-grid .asset-image {
+    margin-bottom: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #000000;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 1024px) {
+    .project-layout {
+      display: flex;
+      flex-direction: column;
+      padding-top: 48px;
+    }
+
+    .sidebar {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      padding: 24px;
+    }
+
+    .info-column {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      padding: 0 24px 24px;
+    }
+
+    .info-text.hidden {
+      display: none;
+    }
+
+    .asset-column {
+      padding: 0 24px 60px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="logo">
+      <img src="assets/images/image1.svg" alt="Logo" />
+    </a>
+    <nav>
+      <a href="index.html" class="active">
+        <span class="dot"></span>
+        Index
+      </a>
+      <a href="../info.html">
+        <span class="dot"></span>
+        Information
+      </a>
+    </nav>
+  </header>
+
+  <div class="project-layout">
+    <!-- Left Sidebar — fixed -->
+    <aside class="sidebar">
+      <div class="project-title">Lingkaran</div>
+
+      <div class="meta-block">
+        <div class="meta-label">Duration</div>
+        <div class="meta-value">2025–</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Location</div>
+        <div class="meta-value">Ipoh, Malaysia</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Identity &amp; Spatial Design</div>
+        <div class="meta-value">Becca Yeap</div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-label">Site Development</div>
+        <div class="meta-value">Ian Chong</div>
+      </div>
+    </aside>
+
+    <!-- Info Column — fixed, text transitions on scroll -->
+    <div class="info-column">
+      <div class="column-header">Info</div>
+      <div class="info-text-container">
+        <div class="info-text visible" data-info="0">
+          <p>Lingkaran is a cultural space housed within a former timber factory in Ipoh, Malaysia. Previously operating as a sawmill, the site now supports exhibitions, public programming, and community use under a shared identity.</p>
+          <p>Led the art direction to unify independent initiatives into a cohesive platform, including naming, brand identity, and wayfinding. Designed the identity system, website, spatial navigation, and graphic applications across the site. The system remains flexible, adapting with each program in collaboration with artists and collectives.</p>
+        </div>
+        <div class="info-text hidden" data-info="1">
+          <p style="color:#FFFFFF; font-weight:500; margin-bottom:0;">Web Design</p>
+          <p style="color:#666666;">Designed the website as a digital extension of a former timber factory, translating the physical space into a navigable interface. The platform was translated into four languages to reflect Malaysia's major language groups, ensuring accessibility across the communities the space engages.</p>
+        </div>
+        <div class="info-text hidden" data-info="2">
+          <p style="color:#FFFFFF; font-weight:500; margin-bottom:0;">Logo Transition Behavior</p>
+          <p style="color:#666666;">The logo animation operates as both identity and navigation, translating Lingkaran's circular motif and underlying spiral concept into the core interaction framework of the website.</p>
+        </div>
+        <div class="info-text hidden" data-info="3">
+          <p style="color:#FFFFFF; font-weight:500; margin-bottom:0;">Graphics &amp; Communications</p>
+          <p style="color:#666666;">Design the visual identity and graphic production, including event posters, social content, and print for @lingkaranipoh, alongside managing the technical setup that makes performances possible: lighting, staging, and custom builds.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asset Column — scrolls normally -->
+    <section class="asset-column">
+      <div class="asset-header">Asset</div>
+      <div class="asset-images">
+        <div class="asset-image" data-info-index="0">
+          <img src="assets/images/image1.gif" alt="Lingkaran" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="1">
+          <img src="assets/images/image2.gif" alt="Lingkaran website" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="1">
+          <img src="assets/images/image3.gif" alt="Lingkaran logo transition" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="2">
+          <img src="assets/images/image4.gif" alt="Lingkaran identity system" loading="lazy" style="border-radius:20px;" />
+        </div>
+        <div class="asset-images-grid">
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image5.gif" alt="Graphics ig1" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image1.png" alt="Graphics ig2" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image6.gif" alt="Graphics ig3" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image2.png" alt="Graphics ig4" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image3.png" alt="Graphics ig5" loading="lazy" />
+        </div>
+        <div class="asset-image" data-info-index="3">
+          <img src="assets/images/image4.png" alt="Graphics ig6" loading="lazy" />
+        </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Scroll-driven info text transitions
+    const infoTexts = document.querySelectorAll('.info-text');
+    const assetImages = document.querySelectorAll('.asset-image:not(.asset-images-grid .asset-image), .asset-images-grid');
+    document.querySelector('.asset-images-grid') && (document.querySelector('.asset-images-grid').dataset.infoIndex = '3');
+    let currentInfo = 0;
+    let debounceTimer = null;
+
+    function updateInfoText(newIndex) {
+      if (newIndex === currentInfo) return;
+
+      infoTexts.forEach(el => {
+        el.classList.remove('visible');
+        el.classList.add('hidden');
+      });
+
+      const target = document.querySelector(`.info-text[data-info="${newIndex}"]`);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('visible');
+      }
+
+      currentInfo = newIndex;
+    }
+
+    // Track the best visible image across all entries
+    const visibilityMap = new Map();
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        visibilityMap.set(entry.target, entry.intersectionRatio);
+      });
+
+      // Debounce: wait for scrolling to settle before transitioning
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        let bestEl = null;
+        let bestRatio = 0;
+
+        visibilityMap.forEach((ratio, el) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestEl = el;
+          }
+        });
+
+        if (bestEl && bestRatio > 0) {
+          const infoIndex = parseInt(bestEl.dataset.infoIndex);
+          updateInfoText(infoIndex);
+        }
+      }, 150);
+    }, {
+      threshold: [0, 0.1, 0.25, 0.5],
+      rootMargin: '0px 0px -10% 0px'
+    });
+
+    assetImages.forEach(img => observer.observe(img));
+
+    // Hide sidebar on scroll
+    const sidebar = document.querySelector('.sidebar');
+    const infoCol = document.querySelector('.info-column');
+    const assetHeader = document.querySelector('.asset-header');
+    const layout = document.querySelector('.project-layout');
+    let scrolled = false;
+
+    window.addEventListener('scroll', () => {
+      const shouldHide = window.scrollY > 40;
+      if (shouldHide !== scrolled) {
+        scrolled = shouldHide;
+        sidebar.classList.toggle('hidden', scrolled);
+        infoCol.classList.toggle('scrolled', scrolled);
+        assetHeader.classList.toggle('scrolled', scrolled);
+        layout.classList.toggle('scrolled', scrolled);
+      }
+    });
+  </script>
+
+<div id="cursor" style="position:fixed;width:16px;height:16px;background:#FFFFFF;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);"></div><script>let mx=0,my=0,cx=0,cy=0;document.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){cx+=(mx-cx)*0.12;cy+=(my-cy)*0.12;document.getElementById("cursor").style.left=cx+"px";document.getElementById("cursor").style.top=cy+"px";requestAnimationFrame(loop);})();</script></body>
+</html>
